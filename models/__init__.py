@@ -1,0 +1,1 @@
+from models.tributo import TributoModel
