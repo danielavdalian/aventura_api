@@ -8,14 +8,18 @@ from flask_cors import CORS
 from resources.tributo import blp as TributoBlueprint
 from dotenv import load_dotenv
 
+from flask import Flask, render_template
 
 from db import db
 
 app = Flask(__name__)
+
+UPLOAD_FOLDER = './img'
 load_dotenv()
 CORS(app)
 
 
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config["PROPAGATE_EXCEPTIONS"] = True
 app.config["API_TITLE"] = "Aventura 2023"
 app.config["API_VERSION"] = "v1"
