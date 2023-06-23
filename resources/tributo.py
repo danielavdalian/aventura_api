@@ -16,8 +16,8 @@ blp = Blueprint("Tributo", __name__, description="Tributo operations") #swagger
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 @blp.route("/Tributos")
-@blp.doc(description='Endpoint to get all the Tributes')
 class Tributos(MethodView):
+    @blp.doc(description='Endpoint to get all the Tributes')
     @blp.response(200, GetTributosSchema(many=True))
     def get(self):
         return TributoModel.query.order_by(TributoModel.total_points)
