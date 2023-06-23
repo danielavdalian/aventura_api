@@ -2,8 +2,8 @@ from marshmallow import Schema, fields, validate
 
 class FileSchema(Schema):
     file = fields.Field(required=True, type="file", description="Archivo a subir")
-    custom_filename = fields.Str()
-    id = fields.Str()
+    custom_filename = fields.Str(description="Nombre custom del archivo")
+    id = fields.Str(description="Id del Tributo")
 
 class GetTributosSchema(Schema):
 
@@ -13,9 +13,6 @@ class GetTributosSchema(Schema):
     total_points = fields.Int()
     img_src = fields.Str()
 
-class GetTributosIdSchema(Schema):
-    id = fields.Int()
-
 class PostTributosSchema(Schema):
     name = fields.Str()
     district = fields.Int()
@@ -23,8 +20,8 @@ class PostTributosSchema(Schema):
     img_src = fields.Str()
 
 class PuntosSchema(Schema):
-    id = fields.Int()
-    puntos = fields.Int()
+    id = fields.Int(description="Id del tributo")
+    puntos = fields.Int(description="Puntos a sumar")
     
 
 

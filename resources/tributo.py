@@ -16,6 +16,7 @@ blp = Blueprint("Tributo", __name__, description="Tributo operations") #swagger
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 @blp.route("/Tributos")
+@blp.doc(description='Endpoint to get all the Tributes')
 class Tributos(MethodView):
     @blp.response(200, GetTributosSchema(many=True))
     def get(self):
@@ -33,6 +34,7 @@ class TributoById(MethodView):
 
     
 @blp.route("/tributo")
+@blp.doc(description='Endpoint to add a new tribute')
 class AddTributo(MethodView):
     @blp.arguments(PostTributosSchema)
     @blp.response(201)
@@ -55,6 +57,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @blp.route('/tributo/suma-puntos', methods=['PUT'])
+@blp.doc(description='Endpoint to add more points')
 class SumaPuntos(MethodView):
     @blp.arguments(PuntosSchema, location='form')
     @blp.response(201)
@@ -83,7 +86,8 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@blp.route("/upload", methods=["POST"])
+@blp.route("/uploadImage", methods=["POST"])
+@blp.doc(description='Endpoint upload an image')
 class UploadImage(MethodView):
     @blp.arguments(FileSchema, location="files")
     @blp.response(201)
@@ -124,6 +128,7 @@ class UploadImage(MethodView):
 
 
 @blp.route('/images/<image_name>')
+@blp.doc(description='Endpoint to get a image')
 def get_image(image_name):
     # Ruta de la carpeta donde se encuentran las imágenes
     image_folder = current_app.config['UPLOAD_FOLDER']  
