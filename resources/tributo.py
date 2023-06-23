@@ -1,13 +1,13 @@
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
-from flask import Flask, flash, request, redirect, url_for, current_app, send_file
+from flask import Flask, flash, request, redirect, url_for, current_app, send_file, jsonify
 from werkzeug.utils import secure_filename
 import os
 
 from db import db
 from models import TributoModel
 
-from schemas import GetTributosSchema,FileSchema,PostTributosSchema
+from schemas import GetTributosSchema,FileSchema,PostTributosSchema,PuntosSchema
 from marshmallow import Schema, fields
 
 
@@ -54,6 +54,34 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+@blp.route('/tributo/suma-puntos', methods=['PUT'])
+class SumaPuntos(MethodView):
+    @blp.arguments(PuntosSchema, location='form')
+    @blp.response(201)
+    def put(self, puntos):
+        puntos_value = puntos['puntos']
+        if puntos_value is None:
+            return {'error': 'No se proporcionó el valor de puntos'}, 400
+        
+        errors = PuntosSchema().validate({'puntos': puntos_value})
+        if errors:
+            return {'error': 'Datos de entrada no válidos'}, 400
+        
+        id_value = puntos['id']
+        tributo = TributoModel.query.get(id_value)
+        if tributo is None:
+            return {'error': 'El tributo no existe'}, 404
+        
+        tributo.total_points += int(puntos_value)
+        db.session.commit()
+        
+        return {'msg': f'Se sumaron {puntos_value} puntos al tributo con ID {id_value}. Total de puntos: {tributo.total_points}'}, 200
+
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @blp.route("/upload", methods=["POST"])
 class UploadImage(MethodView):
@@ -61,8 +89,6 @@ class UploadImage(MethodView):
     @blp.response(201)
     def post(self, file_data):
         if file_data:
-            current_app.logger.info(file_data)
-            current_app.logger.info(request.form['id'])
             # check if the post request has the file part
             if 'file' not in request.files:
                 flash('No file part')
@@ -100,8 +126,9 @@ class UploadImage(MethodView):
 @blp.route('/images/<image_name>')
 def get_image(image_name):
     # Ruta de la carpeta donde se encuentran las imágenes
-    image_folder = current_app.config['UPLOAD_FOLDER']
+    image_folder = current_app.config['UPLOAD_FOLDER']  
     try:
         return send_file(f"{image_folder}/{image_name}", mimetype='image/jpeg')
     except FileNotFoundError:
         return 'Imagen no encontrada', 404
+    

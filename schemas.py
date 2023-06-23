@@ -21,6 +21,10 @@ class PostTributosSchema(Schema):
     district = fields.Int()
     total_points = fields.Int()
     img_src = fields.Str()
+
+class PuntosSchema(Schema):
+    id = fields.Int()
+    puntos = fields.Int()
     
 
 
