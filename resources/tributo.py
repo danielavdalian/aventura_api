@@ -34,9 +34,9 @@ class TributoById(MethodView):
 
     
 @blp.route("/tributo")
-@blp.doc(description='Endpoint to add a new tribute')
 class AddTributo(MethodView):
     @blp.arguments(PostTributosSchema)
+    @blp.doc(description='Endpoint to add a new tribute')
     @blp.response(201)
     def post(self, tributo_data):
         tributo = TributoModel(
@@ -57,9 +57,9 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @blp.route('/tributo/suma-puntos', methods=['PUT'])
-@blp.doc(description='Endpoint to add more points')
 class SumaPuntos(MethodView):
     @blp.arguments(PuntosSchema, location='form')
+    @blp.doc(description='Endpoint to add more points')
     @blp.response(201)
     def put(self, puntos):
         puntos_value = puntos['puntos']
@@ -87,10 +87,10 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @blp.route("/uploadImage", methods=["POST"])
-@blp.doc(description='Endpoint upload an image')
 class UploadImage(MethodView):
     @blp.arguments(FileSchema, location="files")
-    @blp.response(201)
+    @blp.doc(description='Endpoint to get all the Tributes')
+    @blp.response(200)
     def post(self, file_data):
         if file_data:
             # check if the post request has the file part

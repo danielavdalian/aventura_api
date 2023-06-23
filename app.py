@@ -14,6 +14,8 @@ from db import db
 
 app = Flask(__name__)
 
+
+
 UPLOAD_FOLDER = './img'
 load_dotenv()
 CORS(app)
