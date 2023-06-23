@@ -16,7 +16,7 @@ app = Flask(__name__)
 
 
 
-UPLOAD_FOLDER = './img'
+UPLOAD_FOLDER = '/home/avdalian/img'
 load_dotenv()
 CORS(app)
 
