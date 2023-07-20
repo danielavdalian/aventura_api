@@ -2,6 +2,7 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask import Flask, flash, request, redirect, url_for, current_app, send_file, jsonify
 from werkzeug.utils import secure_filename
+from sqlalchemy.exc import IntegrityError
 import os
 
 from db import db
@@ -47,7 +48,10 @@ class AddTributo(MethodView):
         try:
             db.session.add(tributo)
             db.session.commit()
-        except IntegrityError:
+        except IntegrityError as e:
+            db.session.rollback()  # Rollback the session to avoid leaving it in a broken state
+            error_info = e.orig.args[0] if e.orig else str(e)
+            print(f"IntegrityError: {error_info}")
             abort(400, message="Check data")
 
         return {"msg": f"Tributo with username {tributo.name} created"}, 201
