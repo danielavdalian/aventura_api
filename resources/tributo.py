@@ -33,7 +33,38 @@ class TributoById(MethodView):
         else:
             return tributo
 
-    
+@blp.route("/tributo/<int:id>", methods=["DELETE"])
+class DeleteTributo(MethodView):
+    @blp.doc(description='Endpoint to delete a tribute')
+    @blp.response(200)
+    def delete(self, id):
+        tributo = TributoModel.query.get(id)
+        if tributo is None:
+            return {"message": "Tributo not found"}, 404
+
+        try:
+            db.session.delete(tributo)
+            db.session.commit()
+            return {"message": f"Tributo with ID {id} has been deleted successfully"}, 200
+        except Exception as e:
+            db.session.rollback()
+            return {"message": "Error deleting the tributo", "error": str(e)}, 500
+
+@blp.route("/tributo/delete-all", methods=["DELETE"])
+class DeleteAllTributos(MethodView):
+    @blp.doc(description='Endpoint to delete all tributos')
+    @blp.response(200)
+    def delete(self):
+        try:
+            # Delete all tributos from the database
+            num_deleted = TributoModel.query.delete()
+            db.session.commit()
+            return {"message": f"{num_deleted} tributos deleted successfully"}, 200
+        except Exception as e:
+            db.session.rollback()
+            return {"message": "Error deleting tributos", "error": str(e)}, 500
+
+
 @blp.route("/tributo")
 class AddTributo(MethodView):
     @blp.arguments(PostTributosSchema)
