@@ -8,7 +8,7 @@ import os
 from db import db
 from models import TributoModel
 
-from schemas import GetTributosSchema,FileSchema,PostTributosSchema,PuntosSchema
+from schemas import GetTributosSchema,FileSchema,PostTributosSchema,PuntosSchema,PutTributosSchema
 from marshmallow import Schema, fields
 
 
@@ -63,6 +63,38 @@ class DeleteAllTributos(MethodView):
         except Exception as e:
             db.session.rollback()
             return {"message": "Error deleting tributos", "error": str(e)}, 500
+
+
+@blp.route("/tributo/modify-tribute")
+class ModifyTributo(MethodView):
+    @blp.arguments(PutTributosSchema)  # Define a schema for PUT request data
+    @blp.doc(description='Endpoint to modify an existing tribute')
+    @blp.response(200)
+    def put(self,tributo_data):
+        tributoId = tributo_data["id"]
+        tributo = TributoModel.query.get(tributoId)
+        if tributo is None:
+            abort(404, message="Tribute not found")
+
+        # Update the attributes with the new data from tributo_data
+        if "name" in tributo_data:
+            tributo.name = tributo_data["name"]
+        if "district" in tributo_data:
+            tributo.district = tributo_data["district"]
+        if "img_src" in tributo_data:
+            tributo.img_src = tributo_data["img_src"]
+
+        try:
+            db.session.commit()
+        except IntegrityError as e:
+            db.session.rollback()  # Rollback the session to avoid leaving it in a broken state
+            error_info = e.orig.args[0] if e.orig else str(e)
+            print(f"IntegrityError: {error_info}")
+            abort(400, message="Check data")
+
+        return {"msg": f"Tribute {tributo.name} has been updated"}, 200
+
+
 
 
 @blp.route("/tributo")

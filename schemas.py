@@ -19,6 +19,11 @@ class PostTributosSchema(Schema):
     total_points = fields.Int()
     img_src = fields.Str()
 
+class PutTributosSchema(Schema):
+    id = fields.Int(required=True)
+    name = fields.Str(required = False)
+    district = fields.Int(required = False) 
+
 class PuntosSchema(Schema):
     id = fields.Int(description="Id del tributo")
     puntos = fields.Int(description="Puntos a sumar")
